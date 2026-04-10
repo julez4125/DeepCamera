@@ -4,7 +4,7 @@ Monorepo for the AI-NVR control plane, operator UI, API, orchestration services,
 
 ## Current State
 
-Phase 1 through Wave D are implemented in this repo.
+Phase 1 through Wave E are implemented in this repo.
 
 - Wave A: monorepo foundation, API, web shell, shared contracts, auth and RBAC baseline
 - Wave B: timeline, recordings, clips, evidence flow, storage targets and replication foundations
@@ -14,6 +14,11 @@ Phase 1 through Wave D are implemented in this repo.
   - annotation task generation
   - dataset, training job, model registry, and deployment lifecycle APIs
   - live dashboard integration for Wave D
+- Wave E: enterprise hardening
+  - observability overview APIs and audit-log summaries
+  - tenant quota governance and hardening views
+  - orchestrator recovery readiness, backup manifesting, and restore-drill simulation
+  - security hardening workflow, Kubernetes baseline policies, and secret-handling guidance
 
 The repo is set to Node `25.x` at the root.
 
@@ -22,9 +27,9 @@ The repo is set to Node `25.x` at the root.
 - `apps/web`
   Next.js 15 operator interface with the live dashboard, timeline, search, incidents, Wave C, and Wave D surfaces.
 - `apps/api`
-  Fastify 5 API with JWT auth, RBAC, camera/timeline/media routes, incidents, search, alerting, specialized intelligence, and ML lifecycle routes.
+  Fastify 5 API with JWT auth, RBAC, camera/timeline/media routes, incidents, search, alerting, specialized intelligence, ML lifecycle, observability, audit summary, and tenant hardening routes.
 - `apps/orchestrator`
-  Worker supervision, storage replication, and orchestration logic for media and downstream jobs.
+  Worker supervision, storage replication, orchestration logic for media and downstream jobs, plus recovery-readiness and restore-drill coordination.
 - `packages/contracts`
   Shared Zod schemas and TypeScript contracts used across API, web, and services.
 - `packages/ui`
@@ -56,6 +61,9 @@ Worker validation:
 python3 -m unittest discover -s workers/lpr-reader/tests -p 'test_*.py'
 python3 -m unittest discover -s workers/face-matcher/tests -p 'test_*.py'
 python3 -m unittest discover -s workers/reid-linker/tests -p 'test_*.py'
+python3 -m unittest discover -s workers/vlm-enricher/tests -p 'test_*.py'
+python3 -m unittest discover -s workers/detector-yolo/tests -p 'test_*.py'
+bash infra/scripts/security-hardening-check.sh
 ```
 
 ## Important Notes
@@ -66,4 +74,4 @@ python3 -m unittest discover -s workers/reid-linker/tests -p 'test_*.py'
 
 ## Next Step
 
-Once this commit is pushed, the next planned implementation target is Wave E.
+Wave E is implemented and validated in this repo. The next implementation target should start only after a new post-Wave-E plan is defined.

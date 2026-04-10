@@ -61,6 +61,12 @@ import {
   type ModelDeployment,
 } from '../domains/model-lifecycle';
 import {
+  observabilityOverviewSchema,
+  type ObservabilityOverview,
+  tenantHardeningOverviewSchema,
+  type TenantHardeningOverview,
+} from '../domains/enterprise-hardening';
+import {
   paginationParamsSchema,
   paginatedResponseSchema,
 } from '../common/pagination';
@@ -704,6 +710,86 @@ describe('Domain Schemas', () => {
       const result: ModelDeployment = modelDeploymentSchema.parse(validDeployment);
       expect(result.status).toBe('canary');
       expect(result.rollout_strategy).toBe('canary');
+    });
+  });
+
+  describe('Enterprise Hardening Schemas', () => {
+    it('should parse a valid observability overview', () => {
+      const validOverview = {
+        scope_tenant_id: '123e4567-e89b-12d3-a456-426614174000',
+        summary: {
+          site_count: 2,
+          camera_count: 6,
+          open_incident_count: 1,
+          pending_enrichment_count: 2,
+          pending_replication_count: 1,
+          failed_replication_count: 0,
+          active_training_jobs: 1,
+          canary_deployments: 1,
+        },
+        services: [
+          {
+            name: 'api',
+            status: 'healthy',
+            summary: 'Request path healthy',
+            updated_at: '2024-01-15T11:00:00Z',
+          },
+        ],
+        signals: {
+          structured_logs: true,
+          metrics_available: true,
+          trace_correlation: true,
+          dashboard_ready: true,
+        },
+        updated_at: '2024-01-15T11:00:00Z',
+      };
+
+      const result: ObservabilityOverview = observabilityOverviewSchema.parse(validOverview);
+      expect(result.summary.camera_count).toBe(6);
+      expect(result.services[0]?.status).toBe('healthy');
+    });
+
+    it('should parse a valid tenant hardening overview', () => {
+      const validOverview = {
+        tenant: {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          name: 'ACME Corp',
+          slug: 'acme-corp',
+          created_at: '2024-01-15T10:30:00Z',
+          updated_at: '2024-01-15T10:30:00Z',
+        },
+        quota: {
+          tenant_id: '123e4567-e89b-12d3-a456-426614174000',
+          max_sites: 8,
+          max_cameras_per_site: 64,
+          max_storage_targets: 6,
+          max_monthly_exports: 120,
+          max_retention_days: 365,
+          enabled_modules: ['search', 'specialized-intelligence', 'training'],
+          created_at: '2024-01-15T10:30:00Z',
+          updated_at: '2024-01-15T10:30:00Z',
+        },
+        usage: {
+          site_count: 2,
+          camera_count: 10,
+          open_incident_count: 1,
+          policy_count: 3,
+          alert_route_count: 4,
+          storage_target_count: 2,
+          pending_replication_count: 1,
+          failed_replication_count: 0,
+          watchlist_count: 2,
+          identity_profile_count: 3,
+          training_job_count: 1,
+          deployment_count: 1,
+        },
+        quota_status: 'healthy',
+        warnings: [],
+      };
+
+      const result: TenantHardeningOverview = tenantHardeningOverviewSchema.parse(validOverview);
+      expect(result.quota.max_sites).toBe(8);
+      expect(result.usage.storage_target_count).toBe(2);
     });
   });
 

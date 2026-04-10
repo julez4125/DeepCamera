@@ -22,6 +22,7 @@ export * from './domains/incident';
 export * from './domains/enrichment';
 export * from './domains/specialized-intelligence';
 export * from './domains/model-lifecycle';
+export * from './domains/enterprise-hardening';
 export * from './domains/policy';
 export * from './domains/alert-route';
 export * from './domains/search';

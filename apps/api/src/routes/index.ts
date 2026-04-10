@@ -15,6 +15,7 @@ import alertRoutesRoutes from './alert-routes.js';
 import searchRoutes from './search.js';
 import intelligenceRoutes from './intelligence.js';
 import mlRoutes from './ml.js';
+import enterpriseRoutes from './enterprise.js';
 
 export async function registerRoutes(server: FastifyInstance): Promise<void> {
   await server.register(sitesRoutes);
@@ -28,6 +29,7 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
   await server.register(searchRoutes);
   await server.register(intelligenceRoutes);
   await server.register(mlRoutes);
+  await server.register(enterpriseRoutes);
   await server.register(policiesRoutes);
   await server.register(alertRoutesRoutes);
   await server.register(storageRoutes);

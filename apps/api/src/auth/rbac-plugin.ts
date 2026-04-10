@@ -53,13 +53,17 @@ const ROUTE_PERMISSIONS: Record<string, Record<string, Permission>> = {
     '/api/search': 'read:incidents',
     '/api/intelligence/overview': 'read:incidents',
     '/api/ml/overview': 'read:incidents',
+    '/api/observability/overview': 'read:audit_logs',
+    '/api/tenants/hardening': 'manage:tenant',
     '/api/policies': 'read:policies',
     '/api/audit-logs': 'read:audit_logs',
+    '/api/audit-logs/summary': 'read:audit_logs',
   },
   PUT: {
     '/api/cameras/:id': 'write:cameras',
     '/api/incidents/:id': 'write:incidents',
     '/api/policies/:id': 'write:policies',
+    '/api/tenants/:tenantId/quotas': 'manage:tenant',
   },
   DELETE: {
     '/api/cameras/:id': 'write:cameras',

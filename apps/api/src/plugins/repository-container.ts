@@ -31,6 +31,7 @@ import type {
   StoragePolicyAssignment,
   StorageReplicationJob,
   StorageTarget,
+  TenantQuotaRecord,
   TrainingJobRecord,
   WatchlistRecord,
   Zone,
@@ -954,18 +955,148 @@ export default fp(async (fastify: FastifyInstance): Promise<void> => {
     ],
   ]);
 
-  const auditLogs = new Map<string, AuditLog>();
+  const auditLogs = new Map<string, AuditLog>([
+    [
+      '550e8400-e29b-41d4-a716-446655440811',
+      {
+        id: '550e8400-e29b-41d4-a716-446655440811',
+        tenant_id: '550e8400-e29b-41d4-a716-446655440002',
+        user_id: '550e8400-e29b-41d4-a716-446655440955',
+        action: 'UPDATE',
+        resource_type: 'storage_target',
+        resource_id: '550e8400-e29b-41d4-a716-446655440304',
+        details: {
+          field: 'status',
+          value: 'healthy',
+        },
+        ip_address: '10.0.0.20',
+        created_at: '2024-01-01T10:06:00Z',
+      },
+    ],
+    [
+      '550e8400-e29b-41d4-a716-446655440812',
+      {
+        id: '550e8400-e29b-41d4-a716-446655440812',
+        tenant_id: '550e8400-e29b-41d4-a716-446655440002',
+        user_id: '550e8400-e29b-41d4-a716-446655440954',
+        action: 'REVIEW',
+        resource_type: 'incident',
+        resource_id: '550e8400-e29b-41d4-a716-446655440000',
+        details: {
+          queue: 'after_hours',
+        },
+        ip_address: '10.0.0.21',
+        created_at: '2024-01-01T10:07:00Z',
+      },
+    ],
+    [
+      '550e8400-e29b-41d4-a716-446655440813',
+      {
+        id: '550e8400-e29b-41d4-a716-446655440813',
+        tenant_id: '550e8400-e29b-41d4-a716-446655440001',
+        user_id: '550e8400-e29b-41d4-a716-446655440903',
+        action: 'CREATE',
+        resource_type: 'storage_target',
+        resource_id: '550e8400-e29b-41d4-a716-446655440301',
+        details: {
+          name: 'Primary S3 Archive',
+        },
+        ip_address: '10.0.0.10',
+        created_at: '2024-01-01T09:00:00Z',
+      },
+    ],
+  ]);
+  const tenantQuotas = new Map<string, TenantQuotaRecord>([
+    [
+      '550e8400-e29b-41d4-a716-446655440001',
+      {
+        tenant_id: '550e8400-e29b-41d4-a716-446655440001',
+        max_sites: 4,
+        max_cameras_per_site: 24,
+        max_storage_targets: 4,
+        max_monthly_exports: 40,
+        max_retention_days: 90,
+        enabled_modules: ['timeline', 'incidents', 'policies', 'storage'],
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      },
+    ],
+    [
+      '550e8400-e29b-41d4-a716-446655440002',
+      {
+        tenant_id: '550e8400-e29b-41d4-a716-446655440002',
+        max_sites: 8,
+        max_cameras_per_site: 64,
+        max_storage_targets: 6,
+        max_monthly_exports: 120,
+        max_retention_days: 365,
+        enabled_modules: [
+          'timeline',
+          'incidents',
+          'policies',
+          'search',
+          'specialized-intelligence',
+          'training',
+        ],
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      },
+    ],
+  ]);
 
   const nowIso = (): string => new Date().toISOString();
 
   fastify.decorate('diContainer', {
     cradle: {
       tenantRepository: {
+        async findAll(
+          filters: Record<string, unknown> = {},
+          pagination: PaginationOptions = {}
+        ): Promise<PaginatedResult<Tenant>> {
+          const items = Array.from(tenants.values()).filter((tenant) =>
+            Object.entries(filters).every(([key, value]) => tenant[key as keyof Tenant] === value)
+          );
+          return paginate(items, pagination);
+        },
         async findById(id: string): Promise<Tenant | null> {
           return tenants.get(id) ?? null;
         },
         async findBySlug(slug: string): Promise<Tenant | null> {
           return Array.from(tenants.values()).find((tenant) => tenant.slug === slug) ?? null;
+        },
+      },
+      tenantHardeningRepository: {
+        async listTenantQuotas(
+          pagination: PaginationOptions = {},
+          filters: { tenant_id?: string } = {}
+        ): Promise<PaginatedResult<TenantQuotaRecord>> {
+          const items = Array.from(tenantQuotas.values()).filter(
+            (quota) => !filters.tenant_id || quota.tenant_id === filters.tenant_id
+          );
+          return paginate(items, pagination);
+        },
+        async findTenantQuotaByTenantId(tenantId: string): Promise<TenantQuotaRecord | null> {
+          return tenantQuotas.get(tenantId) ?? null;
+        },
+        async upsertTenantQuota(
+          tenantId: string,
+          input: Partial<TenantQuotaRecord>
+        ): Promise<TenantQuotaRecord> {
+          const existing = tenantQuotas.get(tenantId);
+          const now = nowIso();
+          const quota: TenantQuotaRecord = {
+            tenant_id: tenantId,
+            max_sites: input.max_sites ?? existing?.max_sites ?? 4,
+            max_cameras_per_site: input.max_cameras_per_site ?? existing?.max_cameras_per_site ?? 24,
+            max_storage_targets: input.max_storage_targets ?? existing?.max_storage_targets ?? 4,
+            max_monthly_exports: input.max_monthly_exports ?? existing?.max_monthly_exports ?? 40,
+            max_retention_days: input.max_retention_days ?? existing?.max_retention_days ?? 90,
+            enabled_modules: input.enabled_modules ?? existing?.enabled_modules ?? ['timeline', 'incidents'],
+            created_at: existing?.created_at ?? now,
+            updated_at: now,
+          };
+          tenantQuotas.set(tenantId, quota);
+          return quota;
         },
       },
       siteRepository: {

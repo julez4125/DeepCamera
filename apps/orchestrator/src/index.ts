@@ -1,5 +1,6 @@
 import { loadConfig } from './config.js';
 import { RecordingEngineStore } from './db/recording-engine-store.js';
+import { buildRecoveryReadinessSummary } from './engine/recovery/recovery-coordinator.js';
 import { RecordingSupervisor } from './engine/recording-supervisor.js';
 import { createLogger } from './logger.js';
 
@@ -9,6 +10,22 @@ async function main(): Promise<void> {
   const config = loadConfig();
   const store = new RecordingEngineStore(config.databaseUrl);
   await store.connect();
+  const cameras = await store.listRecordingCameras();
+  const recovery = await buildRecoveryReadinessSummary({
+    recordingsRoot: config.recordingsRoot,
+    segmentContainer: config.segmentContainer,
+    settleMs: config.segmentSettleMs,
+    cameras,
+  });
+
+  logger.info('recovery readiness summary', {
+    camera_total: recovery.manifest.totals.cameras,
+    ready_cameras: recovery.manifest.totals.ready,
+    degraded_cameras: recovery.manifest.totals.degraded,
+    empty_cameras: recovery.manifest.totals.empty,
+    recoverable_snapshots: recovery.drill.snapshots.filter((snapshot) => snapshot.recoverable).length,
+    drill_state: recovery.drill.state,
+  });
 
   const supervisor = new RecordingSupervisor({
     store,

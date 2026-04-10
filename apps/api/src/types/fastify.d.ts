@@ -21,10 +21,11 @@ import type {
   StoragePolicyAssignmentRepository,
   StorageReplicationJobRepository,
   StorageTargetRepository,
+  TenantHardeningRepository,
   ZoneRepository,
 } from '../db/repositories/index.js';
 
-type TenantRepositoryContract = Pick<TenantRepository, 'findById' | 'findBySlug'>;
+type TenantRepositoryContract = Pick<TenantRepository, 'findAll' | 'findById' | 'findBySlug'>;
 type SiteRepositoryContract = Pick<
   SiteRepository,
   'findById' | 'findByTenantId' | 'create' | 'update' | 'delete'
@@ -108,6 +109,10 @@ type StorageReplicationJobRepositoryContract = Pick<
   StorageReplicationJobRepository,
   'findByTenantId' | 'findByTargetId' | 'findPending' | 'create' | 'updateStatus'
 >;
+type TenantHardeningRepositoryContract = Pick<
+  TenantHardeningRepository,
+  'listTenantQuotas' | 'findTenantQuotaByTenantId' | 'upsertTenantQuota'
+>;
 
 interface ApiCradle {
   alertRouteRepository: AlertRouteRepositoryContract;
@@ -128,6 +133,7 @@ interface ApiCradle {
   storagePolicyAssignmentRepository: StoragePolicyAssignmentRepositoryContract;
   storageReplicationJobRepository: StorageReplicationJobRepositoryContract;
   storageTargetRepository: StorageTargetRepositoryContract;
+  tenantHardeningRepository: TenantHardeningRepositoryContract;
   tenantRepository: TenantRepositoryContract;
   streamRepository: StreamRepositoryContract;
   zoneRepository: ZoneRepositoryContract;

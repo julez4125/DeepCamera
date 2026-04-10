@@ -27,6 +27,11 @@ export {
 } from './incident-repository';
 export { AuditLogRepository, type AuditLog } from './audit-log-repository';
 export { AlertRouteRepository, type AlertRoute, type AlertChannel } from './alert-route-repository';
+export type {
+  TenantHardeningRepository,
+  TenantQuotaRecord,
+  TenantQuotaUpsertInput,
+} from './tenant-hardening-repository';
 export {
   SearchDocumentRepository,
   type SearchDocument,
