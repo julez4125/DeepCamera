@@ -50,3 +50,14 @@ volumes
 
 # ─── Project Specific ────────────────────────────────
 src/yolov7_reid/src/models/mgn_R50-ibn.onnx
+
+# ─── Nested Platform Workspace Hygiene ───────────────
+DeepCamera
+platform/
+Desktop App Source/
+Desktop App Source (Clean)/
+docs desktop app/
+docs/aegis-reverse-engineering-prompt.md
+docs/ai_nvr_development_plan.md
+docs/ai_nvr_platform_blueprint.md
+docs/ai_nvr_technical_implementation_blueprint.md
