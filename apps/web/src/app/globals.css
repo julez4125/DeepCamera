@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 223 39% 10%;
+    --card-foreground: 210 40% 98%;
+    --muted: 223 31% 15%;
+    --muted-foreground: 215 20% 72%;
+    --border: 223 27% 20%;
+    --primary: 195 100% 46%;
+    --primary-foreground: 222 47% 11%;
+    --font-inter: 'Inter', 'Segoe UI', Arial, sans-serif;
+    --font-display: 'Space Grotesk', 'Inter', 'Segoe UI', Arial, sans-serif;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background:
+      radial-gradient(circle at top, rgba(20, 184, 166, 0.12), transparent 30%),
+      radial-gradient(circle at right top, rgba(56, 189, 248, 0.14), transparent 24%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, #030712 100%);
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground;
+    font-family: var(--font-inter), theme(fontFamily.sans);
+    background:
+      radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.1), transparent 24%),
+      radial-gradient(circle at 80% 12%, rgba(45, 212, 191, 0.1), transparent 20%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, #030712 100%);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), var(--font-inter), theme(fontFamily.sans);
+  }
+
+  ::selection {
+    background: rgba(56, 189, 248, 0.28);
+    color: #fff;
+  }
+}

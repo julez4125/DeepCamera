@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ainvr-reid-linker"
+version = "0.0.1"
+description = "AI-NVR Re-ID linker worker"
+requires-python = ">=3.9"
+authors = [{ name = "AI-NVR Platform" }]
+dependencies = []
+
+[project.scripts]
+ainvr-reid-linker = "ainvr_reid_linker.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["ainvr_reid_linker"]

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ainvr-lpr-reader"
+version = "0.0.1"
+description = "AI-NVR LPR reader worker"
+requires-python = ">=3.9"
+authors = [
+    {name = "AI-NVR Platform"},
+]
+dependencies = []
+
+[project.scripts]
+ainvr-lpr-reader = "ainvr_lpr_reader.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["ainvr_lpr_reader"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "W"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true

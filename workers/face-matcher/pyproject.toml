@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ainvr-face-matcher"
+version = "0.0.1"
+description = "AI-NVR face matcher worker"
+requires-python = ">=3.9"
+authors = [{ name = "AI-NVR Platform" }]
+dependencies = []
+
+[project.scripts]
+ainvr-face-matcher = "ainvr_face_matcher.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["ainvr_face_matcher"]

@@ -1,0 +1,25 @@
+{
+  "name": "@ainvr/test-utils",
+  "version": "0.0.0",
+  "description": "AI-NVR Platform - Test Utilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "type-check": "tsc --noEmit -p tsconfig.typecheck.json"
+  },
+  "dependencies": {
+    "vitest": "^1.0.0",
+    "@ainvr/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  }
+}

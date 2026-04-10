@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ainvr-vlm-enricher"
+version = "0.0.1"
+description = "AI-NVR VLM enrichment worker"
+requires-python = ">=3.9"
+authors = [
+    {name = "AI-NVR Platform"},
+]
+dependencies = []
+
+[project.scripts]
+ainvr-vlm-enricher = "ainvr_vlm_enricher.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["ainvr_vlm_enricher"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "W"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true

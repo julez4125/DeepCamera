@@ -1,0 +1,25 @@
+# go2rtc configuration for AINVR platform
+# This is a minimal configuration for development
+# Cameras will be added dynamically at runtime
+
+# API server configuration
+api:
+  listen: :1984
+  static_dir: ./web
+
+# Media server protocols configuration
+rtsp:
+  listen: :8554
+
+webrtc:
+  listen: :8555
+
+# Logging configuration
+log:
+  level: info
+
+# Camera streams (empty by default, configured dynamically)
+streams: {}
+
+# EXPERIMENTAL: Enable advanced features
+experimental: {}

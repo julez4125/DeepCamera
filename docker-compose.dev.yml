@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for core platform data
+  postgres:
+    image: postgres:16-alpine
+    container_name: ainvr_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ainvr
+      POSTGRES_PASSWORD: ainvr_dev
+      POSTGRES_DB: ainvr
+    volumes:
+      - ainvr_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ainvr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_net
+
+  # Redis cache and message broker
+  redis:
+    image: redis:7-alpine
+    container_name: ainvr_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - ainvr_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_net
+
+  # MinIO S3-compatible object storage for clips, snapshots, and exports
+  minio:
+    image: minio/minio:latest
+    container_name: ainvr_minio
+    ports:
+      - "9000:9000"      # MinIO API
+      - "9001:9001"      # MinIO Console
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ainvr
+      MINIO_ROOT_PASSWORD: ainvr_minio_dev
+    volumes:
+      - ainvr_minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_net
+
+  # go2rtc media server for RTSP/WebRTC streaming
+  go2rtc:
+    image: alexxit/go2rtc:latest
+    container_name: ainvr_go2rtc
+    ports:
+      - "1984:1984"      # API
+      - "8554:8554"      # RTSP
+      - "8555:8555"      # WebRTC
+    volumes:
+      - ./infra/go2rtc/go2rtc.yaml:/config/go2rtc.yaml:ro
+    networks:
+      - media_net
+      - backend_net
+    depends_on:
+      - redis
+
+  # Keycloak identity provider (DEV/TEST ONLY)
+  # ⚠️  WARNING: This is for development and testing only!
+  # ⚠️  DO NOT use in production. Configure an external Keycloak instance for production.
+  keycloak-dev:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: ainvr_keycloak
+    ports:
+      - "8080:8080"
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_LOG_LEVEL: info
+    volumes:
+      - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend_net
+    # Remove this service for production deployments
+
+networks:
+  frontend_net:
+    driver: bridge
+  backend_net:
+    driver: bridge
+  media_net:
+    driver: bridge
+  worker_net:
+    driver: bridge
+
+volumes:
+  ainvr_postgres_data:
+  ainvr_redis_data:
+  ainvr_minio_data:

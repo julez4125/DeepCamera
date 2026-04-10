@@ -1,0 +1,313 @@
+{
+  "realm": "ainvr",
+  "displayName": "AI NVR Platform",
+  "displayNameHtml": "<b>AI NVR Platform</b>",
+  "enabled": true,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "defaultClientScopes": [
+    "web-origins",
+    "acl",
+    "profile",
+    "roles",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "eventsEnabled": true,
+  "eventsListeners": [
+    "jboss-logging"
+  ],
+  "enabledEventTypes": [
+    "REGISTER",
+    "LOGIN_ERROR",
+    "GRANT_CONSENT",
+    "UPDATE_CONSENT_ERROR",
+    "REMOVE_TOTP",
+    "REVOKE_GRANT",
+    "UPDATE_TOTP",
+    "REMOVE_IDENTITY_PROVIDER",
+    "CREATE_IDENTITY_PROVIDER",
+    "UPDATE_IDENTITY_PROVIDER",
+    "CLIENT_LOGIN",
+    "CLIENT_INITIATED_ACCOUNT_LINKING_REQUEST",
+    "TOKEN_EXCHANGE",
+    "AUTHREQID_TO_TOKEN",
+    "IDENTITY_PROVIDER_FIRST_LOGIN",
+    "IDENTITY_PROVIDER_POST_LOGIN",
+    "USER_FEDERATED_IDENTITY_LINK_ERROR",
+    "CODEEXCHANGE_ERROR",
+    "RESET_PASSWORD",
+    "UPDATE_PROFILE_ERROR",
+    "CLIENT_REGISTER",
+    "CLIENT_UPDATE",
+    "CLIENT_DELETE",
+    "FEDERATED_IDENTITY_LINK_ERROR",
+    "UPDATE_PASSWORD_ERROR",
+    "CUSTOM_REQUIRED_ACTION",
+    "EXECUTE_ACTIONS_ERROR",
+    "SEND_VERIFY_EMAIL_ERROR",
+    "EXECUTE_ACTIONS",
+    "REMOVE_FEDERATED_IDENTITY",
+    "UPDATE_EMAIL_ERROR",
+    "CLIENT_DELETE_ERROR",
+    "SEND_IDENTITY_PROVIDER_LINK_ERROR",
+    "LOGIN",
+    "DELETE_ACCOUNT_ERROR",
+    "CLIENT_LOGIN_ERROR",
+    "IDENTITY_PROVIDER_LINK_ERROR",
+    "UPDATE_PASSWORD",
+    "CONFIRM_EMAIL_ERROR",
+    "UPDATE_TOTP_ERROR",
+    "SEND_VERIFY_EMAIL",
+    "VERIFY_PROFILE_ERROR",
+    "DELETE_ACCOUNT",
+    "IDENTITY_PROVIDER_DELETE",
+    "UPDATE_EMAIL",
+    "UPDATE_PROFILE",
+    "SEND_SMS",
+    "SEND_SMS_ERROR",
+    "VERIFY_PROFILE",
+    "REMOVE_TOTP_ERROR",
+    "INIT_IDENTITY_PROVIDER_BROWSER_LOGIN",
+    "REMOVE_IDENTITY_PROVIDER_ERROR",
+    "UPDATE_IDENTITY_PROVIDER_ERROR",
+    "CREATE_IDENTITY_PROVIDER_ERROR",
+    "FEDERATED_IDENTITY_LINK",
+    "SEND_IDENTITY_PROVIDER_LINK",
+    "USER_FEDERATED_IDENTITY_LINK",
+    "REGISTER_ERROR",
+    "SEND_SMS_ACTION",
+    "GRANT_CONSENT_ERROR",
+    "LOGOUT_ERROR",
+    "LOGOUT"
+  ],
+  "clientScopeMappings": {
+    "realm-management": [
+      {
+        "client": "ainvr-api",
+        "roles": [
+          "manage-clients",
+          "manage-users",
+          "manage-realm",
+          "view-realm"
+        ]
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "ainvr-web",
+      "name": "AINVR Web Application",
+      "description": "Public client for AINVR web frontend",
+      "enabled": true,
+      "clientAuthenticationType": "public",
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authenticateByDefault": false,
+      "requireClientSecret": false,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:3000/auth/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acl",
+        "profile",
+        "roles",
+        "email",
+        "openid"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000"
+      },
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "email verified",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "emailVerified",
+            "id.token.claim": "true",
+            "access.token.claim": "false",
+            "claim.name": "email_verified",
+            "jsonType.label": "boolean"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "ainvr-api",
+      "name": "AINVR API Service",
+      "description": "Confidential client for AINVR backend services",
+      "enabled": true,
+      "clientAuthenticationType": "client-secret",
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authenticateByDefault": false,
+      "secret": "ainvr-api-secret-dev",
+      "bearerOnly": false,
+      "attributes": {
+        "access.token.lifespan": "3600"
+      },
+      "protocolMappers": [
+        {
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "platform-admin",
+        "description": "Full administrative access to platform",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "security-admin",
+        "description": "Security policy and user management",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "operator",
+        "description": "Camera and system operations",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "investigator",
+        "description": "Video clip review and investigation",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "viewer",
+        "description": "Read-only access to live and recorded video",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "integrations-admin",
+        "description": "Manage external integrations and webhooks",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "model-admin",
+        "description": "Manage AI models and detection configuration",
+        "composite": false,
+        "clientRole": false
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "site-default",
+      "path": "/site-default",
+      "attributes": {
+        "site": ["default"]
+      },
+      "realmRoles": []
+    }
+  ],
+  "users": [
+    {
+      "username": "dev@ainvr.local",
+      "email": "dev@ainvr.local",
+      "emailVerified": true,
+      "firstName": "Dev",
+      "lastName": "User",
+      "enabled": true,
+      "groups": [
+        "site-default"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "platform-admin",
+        "default-roles-ainvr"
+      ],
+      "clientRoles": {},
+      "attributes": {
+        "locale": ["en"]
+      }
+    }
+  ],
+  "scopeMappings": [
+    {
+      "clientScope": "openid",
+      "roles": []
+    }
+  ]
+}
